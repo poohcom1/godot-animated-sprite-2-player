@@ -3,8 +3,9 @@
 [ext_resource path="res://test/scenes/animation.png" type="Texture" id=1]
 
 [sub_resource type="Animation" id=10]
+length = 0.6
 tracks/0/type = "value"
-tracks/0/path = NodePath("Node/AnimatedSprite2:frame")
+tracks/0/path = NodePath("AnimatedSprite2:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -16,7 +17,7 @@ tracks/0/keys = {
 "values": [ 0, 1, 2 ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Node/AnimatedSprite2:animation")
+tracks/1/path = NodePath("AnimatedSprite2:animation")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
@@ -29,8 +30,9 @@ tracks/1/keys = {
 }
 
 [sub_resource type="Animation" id=11]
+length = 0.6
 tracks/0/type = "value"
-tracks/0/path = NodePath("Node/AnimatedSprite2:frame")
+tracks/0/path = NodePath("AnimatedSprite2:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -42,7 +44,7 @@ tracks/0/keys = {
 "values": [ 0, 1, 2 ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Node/AnimatedSprite2:animation")
+tracks/1/path = NodePath("AnimatedSprite2:animation")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
@@ -55,8 +57,9 @@ tracks/1/keys = {
 }
 
 [sub_resource type="Animation" id=12]
+length = 0.4
 tracks/0/type = "value"
-tracks/0/path = NodePath("Node/AnimatedSprite2:frame")
+tracks/0/path = NodePath("AnimatedSprite2:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -68,7 +71,7 @@ tracks/0/keys = {
 "values": [ 0, 1 ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Node/AnimatedSprite2:animation")
+tracks/1/path = NodePath("AnimatedSprite2:animation")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
@@ -143,10 +146,13 @@ animations = [ {
 [node name="Node" type="Node" parent="."]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Node"]
-root_node = NodePath("../..")
 anims/anim1 = SubResource( 10 )
 anims/anim2 = SubResource( 11 )
 anims/default = SubResource( 12 )
 
 [node name="AnimatedSprite2" type="AnimatedSprite" parent="Node"]
 frames = SubResource( 9 )
+animation = "anim1"
+frame = 2
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="."]

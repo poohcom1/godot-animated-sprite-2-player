@@ -2,10 +2,13 @@
 extends EditorProperty
 
 var anim_player: AnimationPlayer
-
-# The main control for editing the property.
 var drop_down := OptionButton.new()
 
+var replace = false
+
+func set_override(_replace):
+	replace = _replace
+	
 func get_animatedsprite() -> AnimatedSprite:
 	var root = get_tree().edited_scene_root
 	return _get_animated_sprites(root)[drop_down.selected]
@@ -21,7 +24,7 @@ func _get_animated_sprites(root: Node) -> Array:
 		
 	return asNodes
 
-func _init(_anim_player: AnimationPlayer):
+func _init(_anim_player):
 	anim_player = _anim_player
 	
 	drop_down.clip_text = true
@@ -40,19 +43,22 @@ func get_items():
 	drop_down.clear()
 	
 	var root = get_tree().edited_scene_root
-	var anim_players := _get_animated_sprites(root)
+	var anim_sprites := _get_animated_sprites(root)
 	
-	for i in range(len(anim_players)):
-		var anim_player = anim_players[i]
+	for i in range(len(anim_sprites)):
+		var anim_sprite = anim_sprites[i]
 
-		drop_down.add_item(root.get_path_to(anim_player), i)
+		drop_down.add_item(anim_player.get_path_to(anim_sprite), i)
 		
-func convert_sprites(override=false):
+func convert_sprites():
 	var animated_sprite: AnimatedSprite = get_node(get_animatedsprite().get_path())
 	
 	var count = 0
 	
 	var sprite_frames := animated_sprite.frames
+	
+	if not sprite_frames:
+		print("[AS2P] Selected AnimatedSprite has no frames!")
 	
 	for anim in sprite_frames.get_animation_names():
 		var frame_count = sprite_frames.get_frame_count(anim)
@@ -62,17 +68,14 @@ func convert_sprites(override=false):
 			anim_player.get_node(anim_player.root_node).get_path_to(animated_sprite), 
 			anim, 
 			frame_count, 
-			fps,
-			override):
+			fps):
 				
 			count += 1
 			
-	print("[AS2P] Added %d animations!" % count)
+	print("[AS2P] %s %d animations!" % ["Replaced" if replace else "Added", count])
 			
 			
-func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float, replace=false):
-	print(anim_sprite)
-	
+func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float):
 	if anim_player.has_animation(anim):
 		if not replace:
 			return false
@@ -82,6 +85,7 @@ func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float, 
 	var animation := Animation.new()
 	
 	var spf = 1/fps
+	animation.length = spf * count
 	
 	var frame_track = animation.add_track(Animation.TYPE_VALUE, 0)
 	var anim_track = animation.add_track(Animation.TYPE_VALUE, 1)

@@ -12,3 +12,6 @@ func _enter_tree():
 
 func _exit_tree():
 	remove_inspector_plugin(plugin)
+
+var anim_sprite: AnimatedSprite
+var anim_player: AnimationPlayer
