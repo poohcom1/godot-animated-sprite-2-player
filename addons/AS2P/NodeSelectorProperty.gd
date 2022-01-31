@@ -1,10 +1,15 @@
-# RandomIntEditor.gd
+tool
 extends EditorProperty
+## @desc Inspector property for selecting the animation node,
+##			and handles the animation import process.
+##
 
 var anim_player: AnimationPlayer
 var drop_down := OptionButton.new()
 
 var replace = false
+
+signal animation_updated()
 
 func set_override(_replace):
 	replace = _replace
@@ -73,8 +78,9 @@ func convert_sprites():
 			count += 1
 			
 	print("[AS2P] %s %d animations!" % ["Replaced" if replace else "Added", count])
-			
-			
+		
+	emit_signal("animation_updated")
+
 func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float):
 	if anim_player.has_animation(anim):
 		if not replace:
@@ -101,3 +107,6 @@ func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float):
 	anim_player.add_animation(anim, animation)
 
 	return true
+
+func get_tooltip_text():
+	return "AnimationSprite node to import frames from."

@@ -1,3 +1,4 @@
+tool
 extends EditorInspectorPlugin
 
 const NodeSelectorProperty = preload("./NodeSelectorProperty.gd")
@@ -9,6 +10,9 @@ var anim_player: AnimationPlayer
 
 # Options
 var replace = false
+
+# Signals
+signal animation_updated(animation_player)
 
 func can_handle(object):
 	if object is AnimationPlayer:
@@ -34,9 +38,16 @@ func parse_end():
 	node_selector = NodeSelectorProperty.new(anim_player)
 	node_selector.label = "AnimatedSprite Node"
 	
+	node_selector.connect(
+		"animation_updated", 
+		self, 
+		"_on_animation_updated",
+		[],
+		CONNECT_DEFERRED)
+	
 	add_custom_control(node_selector)
 	
-	var replace_option := EditorProperty.new()
+	var replace_option := ReplaceEditorProp.new()
 	replace_option.label = "Replace"
 	
 	var replace_check := CheckBox.new()
@@ -46,14 +57,28 @@ func parse_end():
 	replace_check.connect("toggled", node_selector, "set_override")
 	replace_option.add_child(replace_check)
 	
+	
 	add_custom_control(replace_option)
 	
 	var button := Button.new()
 	button.text = "Import"
+	button.rect_min_size.y = 26
 	button.connect("button_down", node_selector, "convert_sprites")
+	
+	var buttonstyle = StyleBoxFlat.new()
+	buttonstyle.bg_color = Color8(32, 37, 49)
+	button.set("custom_styles/normal", buttonstyle)
 	
 	add_custom_control(button)
 
 
 func _on_replace_set(_replace):
 	replace = _replace
+	
+	
+func _on_animation_updated():
+	emit_signal("animation_updated", anim_player)
+
+class ReplaceEditorProp extends EditorProperty:
+	func get_tooltip_text():
+		return "If true, replace existing animations."
