@@ -1,6 +1,6 @@
 # Godot AnimatedSprite to AnimationPlayer Convertor
 
-[<img src="https://img.shields.io/static/v1?label=GODOT&message=Assets%20Library&color=478CBF&labelColor=FFFFFF&style=for-the-badge&logo=godotengine">](https://godotengine.org/asset-library/asset/1216)
+[<img src="https://img.shields.io/static/v1?label=GODOT&message=Asset%20Library&color=478CBF&labelColor=FFFFFF&style=for-the-badge&logo=godotengine">](https://godotengine.org/asset-library/asset/1216)
 
 A Godot addon to convert animated sprite frames to animations in an animation player. Adds an extra slot in AnimationPlayers' inspector tab to import sprites from an AnimatedSprite.
 
