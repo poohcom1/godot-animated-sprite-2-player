@@ -6,4 +6,5 @@
 /project.godot      export-ignore
 /icon.png           export-ignore
 /icon.png.import    export-ignore
+/screenshots        export-ignore
 /screenshots/**     export-ignore
