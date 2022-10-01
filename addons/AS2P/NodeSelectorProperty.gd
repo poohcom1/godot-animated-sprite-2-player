@@ -68,12 +68,14 @@ func convert_sprites():
 	for anim in sprite_frames.get_animation_names():
 		var frame_count = sprite_frames.get_frame_count(anim)
 		var fps = sprite_frames.get_animation_speed(anim)
+		var looping = sprite_frames.get_animation_loop(anim)
 		
 		if add_animation(
 			anim_player.get_node(anim_player.root_node).get_path_to(animated_sprite), 
 			anim, 
 			frame_count, 
-			fps):
+			fps,
+			looping):
 				
 			count += 1
 			
@@ -81,7 +83,7 @@ func convert_sprites():
 		
 	emit_signal("animation_updated")
 
-func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float):
+func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float, looping: bool):
 	if anim_player.has_animation(anim):
 		if not replace:
 			return false
@@ -92,6 +94,7 @@ func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float):
 	
 	var spf = 1/fps
 	animation.length = spf * count
+	animation.loop = looping
 	
 	var frame_track = animation.add_track(Animation.TYPE_VALUE, 0)
 	var anim_track = animation.add_track(Animation.TYPE_VALUE, 1)
@@ -100,6 +103,9 @@ func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float):
 	animation.track_insert_key(anim_track, 0, anim)
 	
 	animation.track_set_path(frame_track, "%s:frame" % anim_sprite)
+	
+	animation.value_track_set_update_mode(frame_track, Animation.UPDATE_DISCRETE)
+	animation.value_track_set_update_mode(anim_track, Animation.UPDATE_DISCRETE)
 	
 	for i in range(count):
 		animation.track_insert_key(frame_track, i * spf, i)
