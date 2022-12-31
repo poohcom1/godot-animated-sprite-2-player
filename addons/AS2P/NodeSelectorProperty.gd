@@ -66,6 +66,11 @@ func convert_sprites():
 		print("[AS2P] Selected AnimatedSprite2D has no frames!")
 
 	for anim in sprite_frames.get_animation_names():
+		if anim.is_empty():
+			printerr("[AS2P] SpriteFrames on AnimatedSprite2D '%s' has an \
+animation named empty string '', it will be ignored" % animated_sprite.name)
+			continue
+
 		var frame_count = sprite_frames.get_frame_count(anim)
 		var fps = sprite_frames.get_animation_speed(anim)
 		var looping = sprite_frames.get_animation_loop(anim)
@@ -99,11 +104,16 @@ func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float, 
 		global_animation_library = AnimationLibrary.new()
 		anim_player.add_animation_library(&"", global_animation_library)
 
-	if global_animation_library.has_animation(anim):
+	# SpriteFrames allow characters ":" and "[" in animation names, but not
+	# Animation Player library, so sanitize the name
+	var sanitized_anim_name = anim.replace(":", "_")
+	sanitized_anim_name = sanitized_anim_name.replace("[", "_")
+
+	if global_animation_library.has_animation(sanitized_anim_name):
 		if not replace:
 			return false
 		else:
-			global_animation_library.remove_animation(anim)
+			global_animation_library.remove_animation(sanitized_anim_name)
 
 	var animation := Animation.new()
 
@@ -118,6 +128,9 @@ func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float, 
 	var anim_track = animation.add_track(Animation.TYPE_VALUE, 1)
 
 	animation.track_set_path(anim_track, "%s:animation" % anim_sprite)
+
+	# Use the original animation name from SpriteFrames here,
+	# since the track expects a SpriteFrames animation key for the AnimatedSprite2D
 	animation.track_insert_key(anim_track, 0, anim)
 
 	animation.track_set_path(frame_track, "%s:frame" % anim_sprite)
@@ -128,7 +141,7 @@ func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float, 
 	for i in range(count):
 		animation.track_insert_key(frame_track, i * spf, i)
 
-	global_animation_library.add_animation(anim, animation)
+	global_animation_library.add_animation(sanitized_anim_name, animation)
 
 	return true
 
