@@ -1,4 +1,4 @@
-tool
+@tool
 extends EditorProperty
 ## @desc Inspector property for selecting the animation node,
 ##			and handles the animation import process.
@@ -14,7 +14,7 @@ signal animation_updated()
 func set_override(_replace):
 	replace = _replace
 	
-func get_animatedsprite() -> AnimatedSprite:
+func get_animatedsprite() -> AnimatedSprite2D:
 	var root = get_tree().edited_scene_root
 	return _get_animated_sprites(root)[drop_down.selected]
 
@@ -24,7 +24,7 @@ func _get_animated_sprites(root: Node) -> Array:
 	for child in root.get_children():
 		asNodes += _get_animated_sprites(child)
 		
-	if root is AnimatedSprite:
+	if root is AnimatedSprite2D:
 		asNodes.append(root)
 		
 	return asNodes
@@ -56,21 +56,21 @@ func get_items():
 		drop_down.add_item(anim_player.get_path_to(anim_sprite), i)
 		
 func convert_sprites():
-	var animated_sprite: AnimatedSprite = get_node(get_animatedsprite().get_path())
+	var animated_sprite: AnimatedSprite2D = get_node(get_animatedsprite().get_path())
 	
 	var count = 0
 	
 	var sprite_frames := animated_sprite.frames
 	
 	if not sprite_frames:
-		print("[AS2P] Selected AnimatedSprite has no frames!")
+		print("[AS2P] Selected AnimatedSprite2D has no frames!")
 	
 	for anim in sprite_frames.get_animation_names():
 		var frame_count = sprite_frames.get_frame_count(anim)
 		var fps = sprite_frames.get_animation_speed(anim)
 		var looping = sprite_frames.get_animation_loop(anim)
 		
-		if add_animation(
+		if add_animation_library(
 			anim_player.get_node(anim_player.root_node).get_path_to(animated_sprite), 
 			anim, 
 			frame_count, 
@@ -83,12 +83,12 @@ func convert_sprites():
 		
 	emit_signal("animation_updated")
 
-func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float, looping: bool):
+func add_animation_library(anim_sprite: NodePath, anim: String, count: int, fps: float, looping: bool):
 	if anim_player.has_animation(anim):
 		if not replace:
 			return false
 		else:
-			anim_player.remove_animation(anim)
+			anim_player.remove_animation_library(anim)
 			
 	var animation := Animation.new()
 	
@@ -110,7 +110,7 @@ func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float, 
 	for i in range(count):
 		animation.track_insert_key(frame_track, i * spf, i)
 		
-	anim_player.add_animation(anim, animation)
+	anim_player.add_animation_library(anim, animation)
 
 	return true
 

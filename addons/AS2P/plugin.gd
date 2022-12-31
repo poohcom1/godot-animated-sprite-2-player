@@ -1,4 +1,4 @@
-tool
+@tool
 extends EditorPlugin
 
 const Convertor = preload("res://addons/AS2P/InspectorConvertor.gd")
@@ -7,7 +7,7 @@ var plugin: Convertor
 
 func _enter_tree():
 	plugin = Convertor.new()
-	plugin.connect("animation_updated", self, "_refresh", [], CONNECT_DEFERRED)
+	plugin.connect("animation_updated",Callable(self,"_refresh").bind(),CONNECT_DEFERRED)
 	add_inspector_plugin(plugin)
 
 func _refresh(anim_player):
@@ -17,7 +17,7 @@ func _refresh(anim_player):
 	#	the animation panel, as the panel won't update until then 
 	interface.inspect_object(interface.get_edited_scene_root())
 	interface.get_selection().clear()
-	yield(get_tree().create_timer(0.05), "timeout")
+	await get_tree().create_timer(0.05).timeout
 	interface.inspect_object(anim_player)
 	
 func _exit_tree():
