@@ -7,12 +7,7 @@ extends EditorProperty
 var anim_player: AnimationPlayer
 var drop_down := OptionButton.new()
 
-var replace = false
-
 signal animation_updated()
-
-func set_override(_replace):
-	replace = _replace
 
 func get_animatedsprite() -> AnimatedSprite2D:
 	var root = get_tree().edited_scene_root
@@ -58,7 +53,8 @@ func get_items():
 func convert_sprites():
 	var animated_sprite: AnimatedSprite2D = get_node(get_animatedsprite().get_path())
 
-	var count = 0
+	var count := 0
+	var updated_count := 0
 
 	var sprite_frames := animated_sprite.frames
 
@@ -75,19 +71,26 @@ animation named empty string '', it will be ignored" % animated_sprite.name)
 		var fps = sprite_frames.get_animation_speed(anim)
 		var looping = sprite_frames.get_animation_loop(anim)
 
-		if add_animation(
-			anim_player.get_node(anim_player.root_node).get_path_to(animated_sprite),
-			anim,
-			frame_count,
-			fps,
-			looping):
-
-			count += 1
-
-	print("[AS2P] %s %d animations!" % ["Replaced" if replace else "Added", count])
+		var updated = add_animation(
+				anim_player.get_node(anim_player.root_node).get_path_to(animated_sprite),
+				anim,
+				frame_count,
+				fps,
+				looping
+			)
+		
+		count += 1
+		
+		if updated:
+			updated_count += 1
+		
+	if count - updated_count > 0:
+		print("[AS2P] Added %d animations!" % [count - updated_count])
+	if updated_count > 0:
+		print("[AS2P] Updated %d animations!" % updated_count)
 
 	emit_signal("animation_updated")
-
+	
 func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float, looping: bool):
 	# We add the converted animation to the [Global] animation library,
 	# which corresponding to the empty string "" key
@@ -108,14 +111,17 @@ func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float, 
 	# Animation Player library, so sanitize the name
 	var sanitized_anim_name = anim.replace(":", "_")
 	sanitized_anim_name = sanitized_anim_name.replace("[", "_")
+	
+	var updated := false
+	var animation: Animation = null
 
 	if global_animation_library.has_animation(sanitized_anim_name):
-		if not replace:
-			return false
-		else:
-			global_animation_library.remove_animation(sanitized_anim_name)
-
-	var animation := Animation.new()
+		animation = global_animation_library.get_animation(sanitized_anim_name)
+		
+		updated = true
+	else:
+		animation = Animation.new()
+		global_animation_library.add_animation(sanitized_anim_name, animation)
 
 	var spf = 1/fps
 	animation.length = spf * count
@@ -124,16 +130,30 @@ func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float, 
 	# so set loop mode to either None or Linear
 	animation.loop_mode = Animation.LOOP_LINEAR if looping else Animation.LOOP_NONE
 
-	var frame_track = animation.add_track(Animation.TYPE_VALUE, 0)
-	var anim_track = animation.add_track(Animation.TYPE_VALUE, 1)
+	# Remove existing tracks
+	var animation_name_path := "%s:animation" % anim_sprite
+	var frame_path := "%s:frame" % anim_sprite
+	
+	var anim_track: int = animation.find_track(animation_name_path, Animation.TYPE_VALUE)
+	var frame_track: int = animation.find_track(frame_path, Animation.TYPE_VALUE)
+	
+	if frame_track >= 0:
+		animation.remove_track(anim_track)
+	if anim_track >= 0:
+		animation.remove_track(frame_track)
+		
+	# Add and create tracks
+	
+	frame_track = animation.add_track(Animation.TYPE_VALUE, 0)
+	anim_track = animation.add_track(Animation.TYPE_VALUE, 1)
 
-	animation.track_set_path(anim_track, "%s:animation" % anim_sprite)
+	animation.track_set_path(anim_track, animation_name_path)
 
 	# Use the original animation name from SpriteFrames here,
 	# since the track expects a SpriteFrames animation key for the AnimatedSprite2D
 	animation.track_insert_key(anim_track, 0, anim)
 
-	animation.track_set_path(frame_track, "%s:frame" % anim_sprite)
+	animation.track_set_path(frame_track, frame_path)
 
 	animation.value_track_set_update_mode(frame_track, Animation.UPDATE_DISCRETE)
 	animation.value_track_set_update_mode(anim_track, Animation.UPDATE_DISCRETE)
@@ -143,7 +163,7 @@ func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float, 
 
 	global_animation_library.add_animation(sanitized_anim_name, animation)
 
-	return true
+	return updated
 
 func get_tooltip_text():
 	return "AnimationSprite node to import frames from."

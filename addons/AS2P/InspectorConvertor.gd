@@ -8,11 +8,8 @@ var node_selector: NodeSelectorProperty
 # Properties
 var anim_player: AnimationPlayer
 
-# Options
-var replace = false
-
 # Signals
-signal animation_updated(animation_player)
+signal animation_updated(animation_player: AnimationPlayer)
 
 func _can_handle(object):
 	if object is AnimationPlayer:
@@ -21,42 +18,21 @@ func _can_handle(object):
 		return true
 	return false
 
+## Create UI here
 func _parse_end(object: Object):
-	var headerstyle = StyleBoxFlat.new()
-	headerstyle.bg_color = Color8(64, 69, 83)
+	var header = CustomEditorInspectorCategory.new("Import AnimatedSprite2D")
 
-	var header = Label.new()
-	header.set("custom_styles/normal", headerstyle)
-	header.offset_top = 10
-	header.get_minimum_size().y = 25
-	header.text = "Import AnimatedSprite2D"
-	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	header.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-
-	add_custom_control(header)
-
+	# AnimatedSprite2D Node selector
 	node_selector = NodeSelectorProperty.new(anim_player)
 	node_selector.label = "AnimatedSprite2D Node"
 
 	node_selector.animation_updated.connect(
 		_on_animation_updated,
-		CONNECT_DEFERRED)
-
-	add_custom_control(node_selector)
-
-	var replace_option := ReplaceEditorProp.new()
-	replace_option.label = "Replace"
-
-	var replace_check := CheckBox.new()
-	replace_check.button_pressed = replace
-	node_selector.replace = replace
-	replace_check.toggled.connect(_on_replace_set)
-	replace_check.toggled.connect(node_selector.set_override)
-	replace_option.add_child(replace_check)
+		CONNECT_DEFERRED
+		)
 
 
-	add_custom_control(replace_option)
-
+	# Import button
 	var button := Button.new()
 	button.text = "Import"
 	button.get_minimum_size().y = 26
@@ -65,17 +41,66 @@ func _parse_end(object: Object):
 	var buttonstyle = StyleBoxFlat.new()
 	buttonstyle.bg_color = Color8(32, 37, 49)
 	button.set("custom_styles/normal", buttonstyle)
+	
+	var container = VBoxContainer.new()
+	container.add_spacer(true)
 
-	add_custom_control(button)
+	container.add_child(header)
+	container.add_child(node_selector)
+	container.add_spacer(false)
+	container.add_child(button)
 
-
-func _on_replace_set(_replace):
-	replace = _replace
+	add_custom_control(container)
 
 
 func _on_animation_updated():
 	emit_signal("animation_updated", anim_player)
 
-class ReplaceEditorProp extends EditorProperty:
-	func get_tooltip_text():
-		return "If true, replace existing animations."
+# Child class
+class CustomEditorInspectorCategory extends Control:
+	var title: String = ""
+	var icon: Texture2D = null
+	
+	func _init(p_title: String, p_icon: Texture2D = null):
+		title = p_title
+		icon = p_icon
+		
+		tooltip_text = "AnimatedSprite to AnimationPlayer Plugin"
+		
+	func _get_minimum_size() -> Vector2:
+		var font := get_theme_font(&"bold", &"EditorFonts");
+		var font_size := get_theme_font_size(&"bold_size", &"EditorFonts");
+
+		var ms: Vector2
+		ms.y = font.get_height(font_size);
+		if icon:
+			ms.y = max(icon.get_height(), ms.y);
+		
+		ms.y += get_theme_constant(&"v_separation", &"Tree");
+
+		return ms;
+	
+	func _draw() -> void:
+		var sb := get_theme_stylebox(&"bg", &"EditorInspectorCategory")
+		draw_style_box(sb, Rect2(Vector2.ZERO, size))
+		
+		var font := get_theme_font(&"bold", &"EditorFonts")
+		var font_size := get_theme_font_size(&"bold_size", &"EditorFonts")
+		
+		var hs := get_theme_constant(&"h_separation", &"Tree")
+		
+		var w: int = font.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x;
+		if icon:
+			w += hs + icon.get_width();
+		
+
+		var ofs := (get_size().x - w) / 2;
+
+		if icon:
+			draw_texture(icon, Vector2(ofs, (get_size().y - icon.get_height()) / 2).floor())
+			ofs += hs + icon.get_width()
+		
+		var color := get_theme_color(&"font_color", &"Tree")
+		draw_string(font, Vector2(ofs, font.get_ascent(font_size) + (get_size().y - font.get_height(font_size)) / 2).floor(), title, HORIZONTAL_ALIGNMENT_LEFT, get_size().x, font_size, color);
+		
+		
