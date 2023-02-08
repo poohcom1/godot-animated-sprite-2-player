@@ -56,7 +56,7 @@ func convert_sprites():
 	var count := 0
 	var updated_count := 0
 
-	var sprite_frames := animated_sprite.frames
+	var sprite_frames := animated_sprite.sprite_frames
 
 	if not sprite_frames:
 		print("[AS2P] Selected AnimatedSprite2D has no frames!")
