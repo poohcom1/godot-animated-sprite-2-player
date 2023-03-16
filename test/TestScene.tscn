@@ -82,17 +82,74 @@ region = Rect2(672, 0, 96, 96)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_k73iy"]
 animations = [{
-"frames": [SubResource("AtlasTexture_wxncn"), SubResource("AtlasTexture_q5jqh"), SubResource("AtlasTexture_c20cx"), SubResource("AtlasTexture_k8wtt"), SubResource("AtlasTexture_4t206"), SubResource("AtlasTexture_m86xc"), SubResource("AtlasTexture_t6q72")],
+"frames": [{
+"duration": 1.5,
+"texture": SubResource("AtlasTexture_wxncn")
+}, {
+"duration": 1.5,
+"texture": SubResource("AtlasTexture_q5jqh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c20cx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_k8wtt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4t206")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m86xc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t6q72")
+}],
 "loop": false,
 "name": &"attack",
 "speed": 12.0
 }, {
-"frames": [SubResource("AtlasTexture_p4vpv"), SubResource("AtlasTexture_vy52d"), SubResource("AtlasTexture_a71w5"), SubResource("AtlasTexture_rv4rt")],
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_p4vpv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vy52d")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a71w5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rv4rt")
+}],
 "loop": true,
 "name": &"idle",
 "speed": 5.0
 }, {
-"frames": [SubResource("AtlasTexture_r0283"), SubResource("AtlasTexture_rl0fj"), SubResource("AtlasTexture_ny1fk"), SubResource("AtlasTexture_l5aaa"), SubResource("AtlasTexture_1nn0t"), SubResource("AtlasTexture_q3dju"), SubResource("AtlasTexture_mi7ky"), SubResource("AtlasTexture_6psi2")],
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r0283")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rl0fj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ny1fk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_l5aaa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1nn0t")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q3dju")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mi7ky")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6psi2")
+}],
 "loop": true,
 "name": &"run",
 "speed": 12.0
@@ -100,6 +157,7 @@ animations = [{
 
 [sub_resource type="Animation" id="Animation_qwq10"]
 length = 0.583333
+step = 0.0833333
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -107,7 +165,7 @@ tracks/0/path = NodePath("AnimatedSprite2D:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.0833333, 0.166667, 0.25, 0.333333, 0.416667, 0.5),
+"times": PackedFloat32Array(0, 0.125, 0.25, 0.333333, 0.416667, 0.5, 0.583333),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
 "update": 1,
 "values": [0, 1, 2, 3, 4, 5, 6]
@@ -128,6 +186,7 @@ tracks/1/keys = {
 [sub_resource type="Animation" id="Animation_ruwr4"]
 length = 0.8
 loop_mode = 1
+step = 0.2
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -204,7 +263,7 @@ _data = {
 texture_filter = 1
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-frames = SubResource("SpriteFrames_k73iy")
+sprite_frames = SubResource("SpriteFrames_k73iy")
 animation = &"idle"
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]

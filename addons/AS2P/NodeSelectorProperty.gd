@@ -67,16 +67,10 @@ func convert_sprites():
 animation named empty string '', it will be ignored" % animated_sprite.name)
 			continue
 
-		var frame_count = sprite_frames.get_frame_count(anim)
-		var fps = sprite_frames.get_animation_speed(anim)
-		var looping = sprite_frames.get_animation_loop(anim)
-
 		var updated = add_animation(
 				anim_player.get_node(anim_player.root_node).get_path_to(animated_sprite),
 				anim,
-				frame_count,
-				fps,
-				looping
+				sprite_frames
 			)
 		
 		count += 1
@@ -91,7 +85,11 @@ animation named empty string '', it will be ignored" % animated_sprite.name)
 
 	emit_signal("animation_updated")
 	
-func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float, looping: bool):
+func add_animation(anim_sprite: NodePath, anim: String, sprite_frames: SpriteFrames):
+	var frame_count = sprite_frames.get_frame_count(anim)
+	var fps = sprite_frames.get_animation_speed(anim)
+	var looping = sprite_frames.get_animation_loop(anim)
+
 	# We add the converted animation to the [Global] animation library,
 	# which corresponding to the empty string "" key
 	var global_animation_library: AnimationLibrary
@@ -124,7 +122,7 @@ func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float, 
 		global_animation_library.add_animation(sanitized_anim_name, animation)
 
 	var spf = 1/fps
-	animation.length = spf * count
+	animation.length = spf * frame_count
 
 	# SpriteFrames only supports linear looping (not ping-pong),
 	# so set loop mode to either None or Linear
@@ -158,8 +156,17 @@ func add_animation(anim_sprite: NodePath, anim: String, count: int, fps: float, 
 	animation.value_track_set_update_mode(frame_track, Animation.UPDATE_DISCRETE)
 	animation.value_track_set_update_mode(anim_track, Animation.UPDATE_DISCRETE)
 
-	for i in range(count):
-		animation.track_insert_key(frame_track, i * spf, i)
+	# Initialize first sprite key time
+	var next_key_time := 0.0
+
+	for i in range(frame_count):
+		# Insert key at next key time
+		animation.track_insert_key(frame_track, next_key_time, i)
+		
+		# Prepare key time for next sprite by adding duration of current sprite
+		# including Frame Duration multiplier
+		var frame_duration_multiplier = sprite_frames.get_frame_duration(anim, i)
+		next_key_time += frame_duration_multiplier * spf
 
 	global_animation_library.add_animation(sanitized_anim_name, animation)
 
