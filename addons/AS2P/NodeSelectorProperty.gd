@@ -89,6 +89,12 @@ func add_animation(anim_sprite: NodePath, anim: String, sprite_frames: SpriteFra
 	var frame_count = sprite_frames.get_frame_count(anim)
 	var fps = sprite_frames.get_animation_speed(anim)
 	var looping = sprite_frames.get_animation_loop(anim)
+	# Determine the total animation duration in seconds. First sum the duration
+	# of each frame, then divide duration by FPS to get the length in seconds.
+	var duration: float = 0
+	for i in range(frame_count):
+		duration += sprite_frames.get_frame_duration(anim, i)
+	duration = duration / fps
 
 	# We add the converted animation to the [Global] animation library,
 	# which corresponding to the empty string "" key
@@ -122,7 +128,7 @@ func add_animation(anim_sprite: NodePath, anim: String, sprite_frames: SpriteFra
 		global_animation_library.add_animation(sanitized_anim_name, animation)
 
 	var spf = 1/fps
-	animation.length = spf * frame_count
+	animation.length = duration
 
 	# SpriteFrames only supports linear looping (not ping-pong),
 	# so set loop mode to either None or Linear
