@@ -1,4 +1,8 @@
-# Godot AnimatedSprite to AnimationPlayer Convertor
+⚠️ **Not actively maintained / Looking for maintainers** ⚠️
+
+I'm not currently using this addon in my current project, so it's difficult to maintain. If anyone is interested in taking over, please let me know [here](https://github.com/poohcom1/godot-animated-sprite-2-player/issues/21).
+
+# Godot AnimatedSprite to AnimationPlayer Converter
 
 [<img src="https://img.shields.io/static/v1?label=GODOT&message=Asset%20Library&color=478CBF&labelColor=FFFFFF&style=for-the-badge&logo=godotengine">](https://godotengine.org/asset-library/asset/1605)
 
