@@ -16,11 +16,11 @@ func get_animatedsprite():
 func _get_animated_sprites(root: Node) -> Array:
 	var asNodes := []
 
-	for child in root.get_children():
-		asNodes += _get_animated_sprites(child)
-
 	if root is AnimatedSprite2D or root is AnimatedSprite3D:
 		asNodes.append(root)
+		
+	for child in root.get_children():
+		asNodes += _get_animated_sprites(child)
 
 	return asNodes
 
