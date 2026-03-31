@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="AnimatedSprite2Player"
-config/features=PackedStringArray("4.0")
+config/features=PackedStringArray("4.4")
 config/icon="res://icon.png"
 
 [editor_plugins]

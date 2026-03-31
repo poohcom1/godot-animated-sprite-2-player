@@ -254,9 +254,9 @@ tracks/2/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_8rtoe"]
 _data = {
-"attack": SubResource("Animation_qwq10"),
-"idle": SubResource("Animation_ruwr4"),
-"run": SubResource("Animation_ajcet")
+&"attack": SubResource("Animation_qwq10"),
+&"idle": SubResource("Animation_ruwr4"),
+&"run": SubResource("Animation_ajcet")
 }
 
 [node name="TestScene" type="Node2D"]
@@ -268,5 +268,5 @@ animation = &"idle"
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_8rtoe")
+&"": SubResource("AnimationLibrary_8rtoe")
 }
